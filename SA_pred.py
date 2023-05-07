@@ -3,9 +3,11 @@ import joblib
 
 from flask import Flask, jsonify, request
 from text_preprocessing import prepareStopwords, dataPreprocess
+from flasgger import Swagger
 
 
 app = Flask(__name__)
+swagger = Swagger(app)
 
 @app.route('/predict', methods=['POST'])
 def predict():
@@ -31,11 +33,11 @@ def predict():
         description: "The prediction of sentiment: 'positive' or 'negative'."
     """
     #Fetch the model
-    model = joblib.load('c2_Classifier_Sentiment_Model')
+    model = joblib.load('./src/c2_Classifier_Sentiment_Model')
 
     # Ingredients for data preprocess
     ps, all_stopwords = prepareStopwords()
-    cvFile='c1_BoW_Sentiment_Model.pkl'
+    cvFile='./src/c1_BoW_Sentiment_Model.pkl'
     cv = pickle.load(open(cvFile, "rb"))
 
     # Data preprocess
