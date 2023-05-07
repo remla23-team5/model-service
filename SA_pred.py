@@ -41,8 +41,8 @@ def predict():
     # Data preprocess
     input_data = request.get_json()
     review = input_data.get('review')
-    review = dataPreprocess(review, ps, all_stopwords)
-    processed_input = cv.transform([review]).toarray()[0]
+    reviewPre = dataPreprocess(review, ps, all_stopwords)
+    processed_input = cv.transform([reviewPre]).toarray()[0]
 
     # Predict
     prediction = int(model.predict([processed_input])[0])
