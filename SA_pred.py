@@ -1,33 +1,60 @@
-import numpy as np
-import pandas as pd
-import re
 import pickle
 import joblib
 
-import nltk
-from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer
-
-from sklearn.feature_extraction.text import CountVectorizer
+from flask import Flask, jsonify, request
+from text_preprocessing import prepareStopwords, dataPreprocess
 
 
-#Fetch the model
-classifier = joblib.load('c2_Classifier_Sentiment_Model')
+app = Flask(__name__)
 
+@app.route('/predict', methods=['POST'])
+def predict():
+    """
+    Predict the sentiment of a review.
+    ---
+    consumes:
+      - application/json
+    parameters:
+        - name: input_data
+          in: body
+          description: message to be classified.
+          required: True
+          schema:
+            type: object
+            required: review
+            properties:
+                review:
+                    type: string
+                    example: This is an example of an review.
+    responses:
+      200:
+        description: "The prediction of sentiment: 'positive' or 'negative'."
+    """
+    #Fetch the model
+    model = joblib.load('c2_Classifier_Sentiment_Model')
 
-# Get the input and data preprocess
-review = "I'm not sure I will ever come back."
+    # Ingredients for data preprocess
+    ps, all_stopwords = prepareStopwords()
+    cvFile='c1_BoW_Sentiment_Model.pkl'
+    cv = pickle.load(open(cvFile, "rb"))
 
-cvFile='c1_BoW_Sentiment_Model.pkl'
-cv = pickle.load(open(cvFile, "rb"))
+    # Data preprocess
+    input_data = request.get_json()
+    review = input_data.get('review')
+    review = dataPreprocess(review, ps, all_stopwords)
+    processed_input = cv.transform([review]).toarray()[0]
 
-processed_input = cv.transform([review]).toarray()[0]
-prediction = classifier.predict([processed_input])[0]
+    # Predict
+    prediction = int(model.predict([processed_input])[0])
+    
+    res = {
+        "result": prediction,
+        "classifier": "decision tree",
+        "review": review
+    }
+    print(res)
+    return jsonify(res)
 
-
-# Get the setiment result
-prediction_map = {
-    0: "negative",
-    1: "positive"
-}
-print(f"The model believes the review is {prediction_map[prediction]}.")
+if __name__ == '__main__':
+    # Get the setiment result
+    app.run(host="0.0.0.0", port=8080, debug=True)
