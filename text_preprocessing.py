@@ -17,7 +17,7 @@ def dataPreprocess(review, ps, all_stopwords):
     review = re.sub('[^a-zA-Z]', ' ', review)
     review = review.lower()
     review = review.split()
-    review = [ps.stem(word) for word in review if not word in set(all_stopwords)]
+    review = [ps.stem(word) for word in review if word not in set(all_stopwords)]
     review = ' '.join(review)
     return review
 
