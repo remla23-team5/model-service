@@ -4,13 +4,12 @@ WORKDIR /root/
 COPY requirements.txt .
 
 # Setup
-RUN mkdir output &&\
+RUN echo "Installing python packages" &&\
+  mkdir output &&\
 	python -m pip install --upgrade pip &&\
 	pip install -r requirements.txt
 
 # Copy python files
-#COPY SA_pred.py /root/
-#COPY text_preprocessing.py /root/
 COPY ./scripts/*.py /root/
 
 COPY src src
