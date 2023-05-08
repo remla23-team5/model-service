@@ -12,5 +12,5 @@ jobs:
     needs: release
     uses: remla23-team5/cicd/.github/workflows/publish-docker.yaml@main
     with:
-      version: ${{ release.outputs.version_tag }}
+      version: ${{ jobs.release.outputs.version_tag }}
       image_name: ${{ github.repository }}
