@@ -1,15 +1,21 @@
 import pickle
 import joblib
+import pandas as pd
 
 from flask import Flask, jsonify, request
+from flask_restx import Api, Resource
 from text_preprocessing import prepareStopwords, dataPreprocess
 from flasgger import Swagger
 
+from utils import download_model
+
 
 app = Flask(__name__)
+api = Api(app)
 swagger = Swagger(app)
 
 @app.route('/predict', methods=['POST'])
+@api.doc(description='Swagger Generating an API documentation.')
 def predict():
     """
     Predict the sentiment of a review.
@@ -33,7 +39,8 @@ def predict():
         description: "The prediction of sentiment: 'positive' or 'negative'."
     """
     #Fetch the model
-    model = joblib.load('./src/c2_Classifier_Sentiment_Model')
+    file_name = 'c2_Classifier_Sentiment_Model'
+    model = joblib.load('./src/' + file_name)
 
     # Ingredients for data preprocess
     ps, all_stopwords = prepareStopwords()
@@ -44,10 +51,10 @@ def predict():
     input_data = request.get_json()
     review = input_data.get('review')
     reviewPre = dataPreprocess(review, ps, all_stopwords)
-    processed_input = cv.transform([reviewPre]).toarray()[0]
+    reviewDf = pd.DataFrame({'Review': [reviewPre]})
 
     # Predict
-    prediction = int(model.predict([processed_input])[0])
+    prediction = int(model.predict(reviewDf))
     
     res = {
         "result": prediction,
@@ -58,5 +65,8 @@ def predict():
     return jsonify(res)
 
 if __name__ == '__main__':
+    # Download the model on start
+    file_name = 'c2_Classifier_Sentiment_Model'
+    download_model(file_name)
     # Get the setiment result
     app.run(host="0.0.0.0", port=8080, debug=True)
