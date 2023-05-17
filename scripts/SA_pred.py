@@ -3,7 +3,7 @@ import joblib
 import pandas as pd
 
 from flask import Flask, jsonify, request
-from flask_restx import Api, Resource
+from flask_restx import Api
 from text_preprocessing import prepareStopwords, dataPreprocess
 from flasgger import Swagger
 
@@ -44,8 +44,6 @@ def predict():
 
     # Ingredients for data preprocess
     ps, all_stopwords = prepareStopwords()
-    cvFile='./src/c1_BoW_Sentiment_Model.pkl'
-    cv = pickle.load(open(cvFile, "rb"))
 
     # Data preprocess
     input_data = request.get_json()
