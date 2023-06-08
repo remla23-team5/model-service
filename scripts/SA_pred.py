@@ -55,7 +55,7 @@ def predict():
     
     res = {
         "result": prediction,
-        "classifier": "logistic regression",
+        "classifier": "decision tree",
         "review": review
     }
     print(res)
