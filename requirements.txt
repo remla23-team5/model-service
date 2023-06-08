@@ -8,4 +8,5 @@ markupsafe==2.0.1
 flasgger==0.9.5
 joblib==1.2.0
 flask==1.1.4
+flask-restx
 flasgger
