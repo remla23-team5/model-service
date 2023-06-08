@@ -51,11 +51,11 @@ def predict():
     reviewDf = pd.DataFrame({'Review': [reviewPre]})
 
     # Predict
-    prediction = int(model.predict(reviewDf)) + 2
+    prediction = int(model.predict(reviewDf))
     
     res = {
         "result": prediction,
-        "classifier": "decision tree",
+        "classifier": "logistic regression",
         "review": review
     }
     print(res)
