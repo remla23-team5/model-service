@@ -1,15 +1,40 @@
-name: Create release and publish docker image
+name: Continuous Deployment (CD)
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
+    
+env:
+  REGISTRY: ghcr.io
 
 jobs:
-  release:
+  create-release:
+    name: Create new release
     uses: remla23-team5/cicd/.github/workflows/release.yaml@main
-  publish:
-    needs: release
-    uses: remla23-team5/cicd/.github/workflows/publish-docker.yaml@main
-    with:
-      IMAGE_NAME: ${{ github.repository }}
+  publish-docker:
+    name: Publish Docker image
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    needs: create-release
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v4.0.0
+        with:
+          context: .
+          push: true
+          tags: |
+           ${{ env.REGISTRY }}/${{ github.repository }}:latest,
+           ${{ env.REGISTRY }}/${{ github.repository }}:${{ needs.create-release.outputs.version }}
