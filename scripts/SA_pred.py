@@ -51,7 +51,7 @@ def predict():
     reviewDf = pd.DataFrame({'Review': [reviewPre]})
 
     # Predict
-    prediction = int(model.predict(reviewDf))
+    prediction = int(model.predict(reviewDf)) + 2
     
     res = {
         "result": prediction,
