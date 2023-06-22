@@ -11,3 +11,4 @@ flask==1.1.4
 flask-restx
 flasgger
 requests
+lib2==1.0.0

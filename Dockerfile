@@ -1,6 +1,7 @@
-FROM python:3.8-slim
+FROM python:3.9-slim
 
-WORKDIR /root/
+WORKDIR /app/
+
 COPY requirements.txt .
 
 # Setup
@@ -10,13 +11,11 @@ RUN echo "Installing python packages" &&\
 	pip install -r requirements.txt
 
 # Copy python files
-COPY ./scripts/*.py /root/
-
-COPY src src
+COPY ./app /app
 
 # Expose port to talk
 EXPOSE 8080
 
 # Make entrypoint of container
 ENTRYPOINT ["python"]
-CMD ["SA_pred.py"]
+CMD ["main.py"]
